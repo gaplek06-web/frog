@@ -63,7 +63,7 @@
             box-shadow: 0 30px 60px rgba(0,0,0,0.4);
             border: 10px solid #fff;
             max-width: 90%;
-            width: 460px;
+            width: 480px;
             animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
@@ -72,7 +72,6 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* Container Judul dengan Katak */
         .title-container {
             display: flex;
             align-items: center;
@@ -99,40 +98,70 @@
             text-shadow: 3px 3px 0px #059653, -1px -1px 0px #fff, 1px -1px 0px #fff, -1px 1px 0px #fff, 1px 1px 0px #fff;
         }
 
-        .level-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            background: #f1f2f6;
-            padding: 8px;
-            border-radius: 20px;
+        .input-name {
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            border: 3px solid #f1f2f6;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            font-family: 'Nunito', sans-serif;
+            text-align: center;
+            font-weight: 800;
+            outline: none;
+            transition: 0.3s;
         }
 
-        .level-btn {
+        .input-name:focus { border-color: var(--primary); }
+
+        .setting-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .setting-label {
+            font-weight: 800;
+            color: #7f8c8d;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            display: block;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .selector {
+            display: flex;
+            gap: 8px;
+            background: #f1f2f6;
+            padding: 6px;
+            border-radius: 18px;
+        }
+
+        .select-btn {
             flex: 1;
-            padding: 12px;
-            border-radius: 15px;
+            padding: 10px;
+            border-radius: 14px;
             border: none;
             font-family: 'Fredoka One', cursive;
-            font-size: 1rem;
+            font-size: 0.85rem;
             cursor: pointer;
-            transition: 0.3s;
+            transition: 0.2s;
             background: transparent;
             color: #7f8c8d;
         }
 
-        .level-btn.active {
+        .select-btn.active {
             background: white;
-            color: var(--primary);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            color: #2d3436;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
         }
 
         .btn {
             display: block;
             width: 100%;
             padding: 16px;
-            margin: 10px 0;
-            font-size: 1.3rem;
+            margin: 8px 0;
+            font-size: 1.2rem;
             font-family: 'Fredoka One', cursive;
             color: white;
             border: none;
@@ -144,7 +173,6 @@
 
         .btn-solo { background: linear-gradient(to bottom, #05c46b, #059653); }
         .btn-duel { background: linear-gradient(to bottom, #0fbcf9, #0984e3); }
-        .btn-squad { background: linear-gradient(to bottom, #ffa502, #e67e22); }
         .btn-restart { background: #ff3f34; margin-top: 20px; }
 
         #topUI {
@@ -169,6 +197,12 @@
             align-items: center;
             box-shadow: 0 3px 0 #1e272e;
         }
+
+        .sending-status {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -187,39 +221,50 @@
                 <div class="game-title">Froggy Math Jump</div>
             </div>
             
-            <p style="font-weight: 800; color: #7f8c8d; margin-bottom: 8px; font-size: 0.9rem;">TINGKAT KESULITAN:</p>
-            <div class="level-selector">
-                <button id="lvlEasy" class="level-btn active" onclick="setLevel('easy')">MUDAH (×)</button>
-                <button id="lvlHard" class="level-btn" onclick="setLevel('hard')">SUSAH (× ÷)</button>
+            <input type="text" id="playerName" class="input-name" placeholder="Masukkan Namamu..." maxlength="15">
+
+            <div class="setting-group">
+                <span class="setting-label">Tingkat Kesulitan</span>
+                <div class="selector">
+                    <button id="lvlEasy" class="select-btn active" onclick="setDifficulty('easy')">MUDAH </button>
+                    <button id="lvlHard" class="select-btn" onclick="setDifficulty('hard')">SUSAH (× ÷)</button>
+                </div>
             </div>
 
-            <button class="btn btn-solo" onclick="startGame(1)">🎮 SOLO</button>
-            <button class="btn btn-duel" onclick="startGame(2)">⚔️ DUEL</button>
-            <button class="btn btn-squad" onclick="startGame(4)">🏆 SQUAD</button>
+            <div class="setting-group">
+                <span class="setting-label">Mode Waktu</span>
+                <div class="selector">
+                    <button id="modeChill" class="select-btn" onclick="setTimeMode('chill')">TANPA WAKTU</button>
+                    <button id="modeChallenge" class="select-btn active" onclick="setTimeMode('challenge')">TANTANGAN</button>
+                </div>
+            </div>
+
+            <button id="btnSolo" class="btn btn-solo" onclick="validateStart(1)">🎮 MAIN SOLO</button>
+            <button id="btnDuel" class="btn btn-duel" onclick="validateStart(2)">⚔️ DUEL 1 VS 1</button>
         </div>
     </div>
 
     <div id="gameOver" class="overlay hidden">
         <div class="panel">
             <h1 style="font-family: 'Fredoka One'; font-size: 2.5rem; color: #ff3f34; margin-bottom: 15px; text-transform: uppercase;">Game Over</h1>
-            <div id="winnerList" style="margin-bottom: 20px;"></div>
-            <button class="btn btn-restart" onclick="showMenu()">MAIN LAGI</button>
+            <div id="winnerList" style="margin-bottom: 10px;"></div>
+            <div id="sheetStatus" class="sending-status">Menyimpan skor ke cloud...</div>
+            <button class="btn btn-restart" onclick="showMenu()">KEMBALI KE MENU</button>
         </div>
     </div>
 
 <script>
 /**
- * ASET GAMBAR
+ * KONFIGURASI
  */
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwBl4FWqe90ug3ExTr1piLvpzf2jTXs8dhHaxhP5YOhSOUi-oEw-IbVAeYMqgDUdrus/exec"; // Masukkan URL Apps Script Anda di sini
+
 const frogImg = new Image();
 frogImg.src = "https://i.imgur.com/GvlmIVI.png";
 
 const koiImg = new Image();
 koiImg.src = "https://i.imgur.com/I5tvXI4.png";
 
-/**
- * AUDIO ENGINE
- */
 const AudioEngine = (() => {
     let ctx = null;
     let muted = false;
@@ -245,114 +290,42 @@ const AudioEngine = (() => {
 })();
 
 /**
- * POND ANIMATION ELEMENTS
+ * POND ANIMATION
  */
 class KoiFish {
-    constructor(canvasWidth, canvasHeight) {
-        this.cw = canvasWidth;
-        this.ch = canvasHeight;
-        this.reset();
-    }
-    
+    constructor(w, h) { this.cw = w; this.ch = h; this.reset(); }
     reset() {
-        this.x = Math.random() * this.cw;
-        this.y = Math.random() * this.ch;
-        this.angle = Math.random() * Math.PI * 2;
-        this.targetAngle = this.angle;
-        this.velocity = 0.5 + Math.random();
-        this.size = 28 + Math.random() * 18;
-        this.turnSpeed = 0.02 + Math.random() * 0.03;
-        this.wiggling = 0;
-        this.wiggleSpeed = 0.1 + Math.random() * 0.1;
+        this.x = Math.random() * this.cw; this.y = Math.random() * this.ch;
+        this.angle = Math.random() * Math.PI * 2; this.targetAngle = this.angle;
+        this.velocity = 0.5 + Math.random(); this.size = 30 + Math.random() * 20;
+        this.turnSpeed = 0.02; this.wiggling = 0; this.wiggleSpeed = 0.1;
     }
-
     update(playing) {
-        if (Math.random() < 0.01) {
-            this.targetAngle += (Math.random() - 0.5) * Math.PI * 0.5;
-        }
-
-        let angleDiff = this.targetAngle - this.angle;
-        while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
-        while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-        this.angle += angleDiff * this.turnSpeed;
-
-        const margin = 100;
-        if (this.x < margin) this.targetAngle = 0;
-        if (this.x > this.cw - margin) this.targetAngle = Math.PI;
-        if (this.y < margin) this.targetAngle = Math.PI / 2;
-        if (this.y > this.ch - margin) this.targetAngle = -Math.PI / 2;
-
-        const baseSpeed = playing ? 1.8 : 0.8;
+        if (Math.random() < 0.01) this.targetAngle += (Math.random() - 0.5) * Math.PI * 0.5;
+        let diff = this.targetAngle - this.angle;
+        while (diff > Math.PI) diff -= Math.PI * 2;
+        while (diff < -Math.PI) diff += Math.PI * 2;
+        this.angle += diff * this.turnSpeed;
+        const baseSpeed = playing ? 1.5 : 0.8;
         this.x += Math.cos(this.angle) * this.velocity * baseSpeed;
         this.y += Math.sin(this.angle) * this.velocity * baseSpeed;
-
-        this.wiggling += this.wiggleSpeed * (playing ? 2 : 1);
+        if(this.x < -50) this.x = this.cw + 50; if(this.x > this.cw + 50) this.x = -50;
+        if(this.y < -50) this.y = this.ch + 50; if(this.y > this.ch + 50) this.y = -50;
+        this.wiggling += this.wiggleSpeed;
     }
-
     draw(ctx) {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        const wiggleEffect = Math.sin(this.wiggling) * 0.12;
-        ctx.rotate(this.angle + Math.PI / 2 + wiggleEffect);
-        ctx.globalAlpha = 0.5;
-        if (koiImg.complete) {
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = "rgba(0,0,0,0.3)";
-            ctx.shadowOffsetY = 10;
-            ctx.drawImage(koiImg, -this.size / 2, -this.size / 2, this.size, this.size);
-        } else {
-            ctx.fillStyle = '#ff793f';
-            ctx.beginPath(); ctx.ellipse(0, 0, this.size / 2, this.size / 4, 0, 0, Math.PI * 2); ctx.fill();
-        }
+        ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.angle + Math.PI/2 + Math.sin(this.wiggling)*0.15);
+        ctx.globalAlpha = 0.4;
+        if(koiImg.complete) ctx.drawImage(koiImg, -this.size/2, -this.size/2, this.size, this.size);
         ctx.restore();
     }
 }
 
-class RainDrop {
-    constructor(cw, ch) {
-        this.cw = cw; this.ch = ch;
-        this.reset();
-    }
-    reset() {
-        this.x = Math.random() * this.cw;
-        this.y = -50;
-        this.targetY = Math.random() * this.ch;
-        this.speed = 15 + Math.random() * 15;
-    }
-    update(ripples, playing) {
-        if (!playing) return;
-        this.y += this.speed;
-        if(this.y >= this.targetY) {
-            ripples.push(new Ripple(this.x, this.y, 0.3, 1));
-            this.reset();
-        }
-    }
-    draw(ctx, playing) {
-        if (!playing) return;
-        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-        ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(this.x, this.y + 12); ctx.stroke();
-    }
-}
-
 class Ripple {
-    constructor(x, y, maxAlpha = 0.5, speed = 1.8) {
-        this.x = x; this.y = y;
-        this.r = 0;
-        this.alpha = maxAlpha;
-        this.maxAlpha = maxAlpha;
-        this.speed = speed;
-        this.active = true;
-    }
-    update() {
-        this.r += this.speed;
-        this.alpha -= 0.015;
-        if(this.alpha <= 0) this.active = false;
-    }
+    constructor(x, y) { this.x = x; this.y = y; this.r = 0; this.alpha = 0.5; this.active = true; }
+    update() { this.r += 2; this.alpha -= 0.015; if(this.alpha <= 0) this.active = false; }
     draw(ctx) {
-        ctx.save();
-        ctx.strokeStyle = `rgba(255,255,255,${this.alpha})`;
-        ctx.lineWidth = 2;
+        ctx.save(); ctx.strokeStyle = `rgba(255,255,255,${this.alpha})`; ctx.lineWidth = 2;
         ctx.beginPath(); ctx.ellipse(this.x, this.y, this.r, this.r/2.5, 0, 0, Math.PI*2); ctx.stroke();
         ctx.restore();
     }
@@ -365,59 +338,52 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 let gameInstances = [];
 let koiFish = [];
-let rainDrops = [];
 let ripples = [];
 let isPlaying = false;
 let lastTime = 0;
 let timeGlobal = 0;
-let currentDifficulty = 'easy';
 
-function setLevel(lvl) {
+// Game Settings
+let currentDifficulty = 'easy';
+let currentTimeMode = 'challenge'; // 'chill' or 'challenge'
+let currentUsername = "Pemain";
+
+function setDifficulty(lvl) {
     currentDifficulty = lvl;
     document.getElementById('lvlEasy').classList.toggle('active', lvl === 'easy');
     document.getElementById('lvlHard').classList.toggle('active', lvl === 'hard');
 }
 
-function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    if (koiFish.length === 0) {
-        koiFish = Array.from({length: 12}, () => new KoiFish(canvas.width, canvas.height));
-        rainDrops = Array.from({length: 10}, () => new RainDrop(canvas.width, canvas.height));
-    } else {
-        koiFish.forEach(k => { k.cw = canvas.width; k.ch = canvas.height; });
-        rainDrops.forEach(d => { d.cw = canvas.width; d.ch = canvas.height; });
-    }
-    if(isPlaying) layout(gameInstances.length);
+function setTimeMode(mode) {
+    currentTimeMode = mode;
+    document.getElementById('modeChill').classList.toggle('active', mode === 'chill');
+    document.getElementById('modeChallenge').classList.toggle('active', mode === 'challenge');
 }
-window.addEventListener('resize', resize);
 
-function layout(count) {
-    const w = canvas.width;
-    const h = canvas.height;
-    gameInstances.forEach((g, i) => {
-        const colWidth = w / count;
-        g.setBounds(i * colWidth, 0, colWidth, h);
-        g.reset();
-    });
+function validateStart(count) {
+    const nameInput = document.getElementById('playerName').value.trim();
+    if (nameInput === "") {
+        document.getElementById('playerName').style.borderColor = "#ff3f34";
+        return;
+    }
+    currentUsername = nameInput;
+    startGame(count);
 }
 
 function genMath() {
-    const diffScale = Math.min(10, Math.floor(timeGlobal / 10));
-    const useDivision = currentDifficulty === 'hard' && Math.random() > 0.5;
-    if (useDivision) {
-        const n1 = Math.floor(Math.random() * (5 + diffScale)) + 2;
-        const ans = Math.floor(Math.random() * 9) + 2;
-        const product = n1 * ans;
+    if (currentDifficulty === 'easy') {
+        const n1 = Math.floor(Math.random() * 11) + 10; 
+        const n2 = Math.floor(Math.random() * 8) + 2;   
+        const ans = n1 * n2;
         let opts = [ans];
         while(opts.length < 4) {
-            let w = ans + (Math.floor(Math.random() * 5) + 1) * (Math.random() > 0.5 ? 1 : -1);
+            let w = ans + (Math.floor(Math.random() * 6) + 1) * (Math.random() > 0.5 ? 1 : -1);
             if(w > 0 && !opts.includes(w)) opts.push(w);
         }
-        return { q: `${product} ÷ ${n1}`, a: ans, opts: opts.sort(() => Math.random() - 0.5) };
+        return { q: `${n1} × ${n2}`, a: ans, opts: opts.sort(() => Math.random() - 0.5) };
     } else {
-        const n1 = Math.floor(Math.random() * (5 + diffScale)) + 2;
-        const n2 = Math.floor(Math.random() * 9) + 1;
+        const n1 = Math.floor(Math.random() * 10) + 6;
+        const n2 = Math.floor(Math.random() * 10) + 6;
         const ans = n1 * n2;
         let opts = [ans];
         while(opts.length < 4) {
@@ -436,131 +402,97 @@ class PlayerGame {
         this.frog = { x: 0, y: 0, jumping: false, p: 0, scale: 1 };
         this.leaves = [];
         this.question = null;
-        this.timer = 10; // Default awal 10 detik
+        this.timer = 10;
+        this.maxTimer = 10;
     }
     setBounds(x, y, w, h) { this.bx = x; this.by = y; this.bw = w; this.bh = h; }
     reset() {
         this.baseX = this.bx + this.bw * 0.5;
         this.baseY = this.by + this.bh * 0.85;
-        this.frog.x = this.baseX;
-        this.frog.y = this.baseY;
+        this.frog.x = this.baseX; this.frog.y = this.baseY;
         this.nextQuestion();
     }
     nextQuestion() {
-        // Durasi 10 detik untuk Mudah, 7 detik untuk Susah
-        this.timer = currentDifficulty === 'hard' ? 7 : 10; 
+        this.maxTimer = currentDifficulty === 'hard' ? 7 : 10;
+        this.timer = this.maxTimer;
         this.question = genMath();
         this.leaves = [];
         const startY = this.by + this.bh * 0.35;
-        const leafAreaH = this.bh * 0.4;
+        const areaH = this.bh * 0.4;
         for(let i=0; i<4; i++) {
-            const colIdx = i % 2;
-            const rowIdx = Math.floor(i / 2);
             this.leaves.push({
-                x: this.bx + (this.bw * 0.3) + (colIdx * (this.bw * 0.4)),
-                y: startY + (rowIdx * (leafAreaH / 2)),
+                x: this.bx + (this.bw * 0.3) + ((i % 2) * (this.bw * 0.4)),
+                y: startY + (Math.floor(i / 2) * (areaH / 2)),
                 val: this.question.opts[i],
-                swayOffset: Math.random() * Math.PI * 2
+                sway: Math.random() * Math.PI * 2
             });
-        }
-    }
-    handleInput(tx, ty) {
-        if(this.isDead || this.frog.jumping) return;
-        if(tx < this.bx || tx > this.bx + this.bw || ty < this.by || ty > this.by + this.bh) return;
-        const r = Math.min(30, this.bw * 0.35);
-        let hit = this.leaves.find(l => Math.hypot(tx - l.x, ty - l.y) < r + 20);
-        if(hit) {
-            this.frog.jumping = true; this.frog.p = 0;
-            this.frog.sx = this.frog.x; this.frog.sy = this.frog.y;
-            this.frog.tx = hit.x; this.frog.ty = hit.y;
-            this.frog.targetVal = hit.val;
-            ripples.push(new Ripple(this.frog.x, this.frog.y, 0.4, 2));
-            AudioEngine.playJump();
         }
     }
     update(dt) {
         if(this.isDead) return;
-        this.timer -= dt;
-        if(this.timer <= 0) { this.isDead = true; AudioEngine.playFail(); }
+        
+        // Timer Logic
+        if(currentTimeMode === 'challenge') {
+            this.timer -= dt;
+            if(this.timer <= 0) { this.isDead = true; AudioEngine.playFail(); }
+        }
+
         if(this.frog.jumping) {
-            this.frog.p += 0.12; 
+            this.frog.p += 0.12;
             if(this.frog.p >= 1) {
-                this.frog.jumping = false;
-                this.frog.scale = 1;
-                ripples.push(new Ripple(this.frog.tx, this.frog.ty, 0.8, 3));
+                this.frog.jumping = false; this.frog.scale = 1;
+                ripples.push(new Ripple(this.frog.tx, this.frog.ty));
                 if(this.frog.targetVal === this.question.a) {
-                    this.score += 10;
-                    AudioEngine.playOk(this.score/10);
+                    this.score += 10; AudioEngine.playOk(this.score/10);
                     this.nextQuestion();
-                } else {
-                    this.isDead = true; AudioEngine.playFail();
-                }
+                } else { this.isDead = true; AudioEngine.playFail(); }
                 this.frog.x = this.baseX; this.frog.y = this.baseY;
             } else {
                 let p = this.frog.p;
                 this.frog.x = this.frog.sx + (this.frog.tx - this.frog.sx) * p;
-                const arcHeight = 120;
-                this.frog.y = this.frog.sy + (this.frog.ty - this.frog.sy) * p - Math.sin(p * Math.PI) * arcHeight;
+                this.frog.y = this.frog.sy + (this.frog.ty - this.frog.sy) * p - Math.sin(p * Math.PI) * 100;
                 this.frog.scale = 1 + Math.sin(p * Math.PI) * 0.4;
             }
         }
     }
     draw(ctx) {
-        ctx.save();
-        ctx.beginPath(); ctx.rect(this.bx, this.by, this.bw, this.bh); ctx.clip();
-        if (this.isDead) { ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(this.bx, this.by, this.bw, this.bh); }
-        const r = Math.min(32, this.bw * 0.3);
+        ctx.save(); ctx.beginPath(); ctx.rect(this.bx, this.by, this.bw, this.bh); ctx.clip();
+        if(this.isDead) { ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.fillRect(this.bx, this.by, this.bw, this.bh); }
         
-        const drawPad = (x, y, val, offset=0) => {
-            const swayX = this.isDead ? 0 : Math.sin(timeGlobal + offset) * 5;
-            const swayY = this.isDead ? 0 : Math.cos(timeGlobal * 0.8 + offset) * 3;
-            ctx.fillStyle = 'rgba(0,0,0,0.15)';
-            ctx.beginPath(); ctx.arc(x + 5 + swayX, y + 5 + swayY, r, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = this.isDead ? '#636e72' : '#2ecc71';
-            ctx.beginPath(); ctx.arc(x + swayX, y + swayY, r, 0.4, Math.PI * 1.8); ctx.lineTo(x + swayX, y + swayY); ctx.fill();
+        const r = Math.min(32, this.bw * 0.28);
+        const drawLeaf = (x, y, val, s) => {
+            const sx = this.isDead ? 0 : Math.sin(timeGlobal + s) * 4;
+            ctx.fillStyle = 'rgba(0,0,0,0.1)'; ctx.beginPath(); ctx.arc(x+sx+4, y+4, r, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = this.isDead ? '#95a5a6' : '#2ecc71'; ctx.beginPath(); ctx.arc(x+sx, y, r, 0.4, Math.PI*1.8); ctx.lineTo(x+sx, y); ctx.fill();
             if(val) {
-                ctx.fillStyle = '#fff'; ctx.font = `900 ${r*0.8}px Nunito`;
-                ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; 
-                ctx.fillText(val, x + swayX, y + swayY);
+                ctx.fillStyle = '#fff'; ctx.font = `900 ${r*0.8}px Nunito`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText(val, x+sx, y);
             }
         };
 
-        drawPad(this.baseX, this.baseY, null, 0);
-        if(!this.isDead) this.leaves.forEach(l => drawPad(l.x, l.y, l.val, l.swayOffset));
+        drawLeaf(this.baseX, this.baseY, null, 0);
+        if(!this.isDead) this.leaves.forEach(l => drawLeaf(l.x, l.y, l.val, l.sway));
 
-        ctx.save();
-        ctx.translate(this.frog.x, this.frog.y);
-        if(this.isDead) { ctx.scale(1, -1); ctx.globalAlpha = 0.7; } 
-        else { ctx.scale(this.frog.scale, this.frog.scale); }
-        
-        const frogSize = r * 2.2;
-        if (frogImg.complete) {
-            if(this.frog.jumping) {
-                ctx.shadowBlur = 20;
-                ctx.shadowColor = "rgba(0,0,0,0.4)";
-                ctx.shadowOffsetY = 30 * (this.frog.scale - 1);
-            }
-            ctx.drawImage(frogImg, -frogSize/2, -frogSize/2, frogSize, frogSize);
-        } else {
-            ctx.fillStyle = '#27ae60';
-            ctx.beginPath(); ctx.ellipse(0, 0, r*0.7, r*0.6, 0, 0, Math.PI*2); ctx.fill();
-        }
+        ctx.save(); ctx.translate(this.frog.x, this.frog.y);
+        if(this.isDead) ctx.scale(1, -1); else ctx.scale(this.frog.scale, this.frog.scale);
+        const fSize = r * 2.2;
+        if(frogImg.complete) ctx.drawImage(frogImg, -fSize/2, -fSize/2, fSize, fSize);
         ctx.restore();
 
         if(!this.isDead) {
-            ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
-            ctx.font = `900 ${Math.min(18, this.bw*0.12)}px Nunito`;
-            ctx.fillText(`P${this.id} Skor: ${this.score}`, this.bx + this.bw/2, this.by + 35);
-            const boxW = this.bw * 0.85; const boxH = 55; const boxX = this.bx + (this.bw - boxW)/2; const boxY = this.by + 60;
-            ctx.fillStyle = 'rgba(255,255,255,0.92)'; ctx.beginPath(); ctx.roundRect(boxX, boxY, boxW, boxH, 15); ctx.fill();
-            ctx.fillStyle = '#2c3e50'; ctx.font = `900 ${Math.min(26, this.bw*0.2)}px Fredoka One`;
-            ctx.fillText(this.question.q, this.bx + this.bw/2, boxY + boxH/2 + 8);
-            ctx.fillStyle = 'rgba(0,0,0,0.1)'; ctx.fillRect(boxX, boxY + boxH + 8, boxW, 6);
+            ctx.fillStyle = '#fff'; ctx.font = `900 ${Math.min(20, this.bw*0.1)}px Nunito`; ctx.textAlign = 'center';
+            ctx.fillText(`${gameInstances.length > 1 ? 'P'+this.id : currentUsername}: ${this.score}`, this.bx + this.bw/2, this.by + 35);
             
-            // Indikator visual timer
-            const timerMax = currentDifficulty === 'hard' ? 7 : 10;
-            ctx.fillStyle = this.timer < 2 ? '#ff3f34' : '#2ecc71'; 
-            ctx.fillRect(boxX, boxY + boxH + 8, boxW * (this.timer/timerMax), 6);
+            const qW = this.bw * 0.8; const qH = 50; const qX = this.bx + (this.bw - qW)/2;
+            ctx.fillStyle = 'white'; ctx.beginPath(); ctx.roundRect(qX, this.by + 60, qW, qH, 12); ctx.fill();
+            ctx.fillStyle = '#2c3e50'; ctx.font = `900 ${Math.min(24, this.bw*0.15)}px Fredoka One`;
+            ctx.fillText(this.question.q, this.bx + this.bw/2, this.by + 60 + qH/2 + 8);
+
+            if(currentTimeMode === 'challenge') {
+                ctx.fillStyle = 'rgba(0,0,0,0.1)'; ctx.fillRect(qX, this.by + 60 + qH + 5, qW, 6);
+                ctx.fillStyle = this.timer < 3 ? '#ff3f34' : '#2ecc71';
+                ctx.fillRect(qX, this.by + 60 + qH + 5, qW * (this.timer/this.maxTimer), 6);
+            }
         }
         ctx.restore();
     }
@@ -569,47 +501,51 @@ class PlayerGame {
 function startGame(count) {
     AudioEngine.init();
     gameInstances = Array.from({length: count}, (_, i) => new PlayerGame(i+1));
-    isPlaying = true; timeGlobal = 0; layout(count);
+    isPlaying = true; timeGlobal = 0; 
+    resize();
     document.getElementById('mainMenu').classList.add('hidden');
     document.getElementById('gameOver').classList.add('hidden');
     lastTime = performance.now();
 }
 
 function loop(t) {
-    const dt = (t - lastTime)/1000;
-    lastTime = t; timeGlobal += dt;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    const waterGrad = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 10, canvas.width/2, canvas.height/2, canvas.width);
-    waterGrad.addColorStop(0, isPlaying ? '#15a1d1' : '#0e6d8f');
-    waterGrad.addColorStop(1, '#0b3d4d');
-    ctx.fillStyle = waterGrad; ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    ripples = ripples.filter(r => r.active);
-    ripples.forEach(r => { r.update(); r.draw(ctx); });
-    
+    const dt = (t - lastTime)/1000; lastTime = t; timeGlobal += dt;
+    ctx.fillStyle = '#15a1d1'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ripples.forEach(r => { r.update(); r.draw(ctx); }); ripples = ripples.filter(r => r.active);
     koiFish.forEach(k => { k.update(isPlaying); k.draw(ctx); });
-    
-    rainDrops.forEach(d => { d.update(ripples, isPlaying); d.draw(ctx, isPlaying); });
-    
     if(isPlaying) {
-        let anyAlive = false;
-        gameInstances.forEach(g => { g.update(dt); g.draw(ctx); if(!g.isDead) anyAlive = true; });
-        if(!anyAlive) { isPlaying = false; setTimeout(endGame, 1000); }
+        let alive = 0;
+        gameInstances.forEach(g => { g.update(dt); g.draw(ctx); if(!g.isDead) alive++; });
+        if(alive === 0) { isPlaying = false; setTimeout(endGame, 800); }
     }
     requestAnimationFrame(loop);
 }
 
+async function sendToGoogleSheets(name, score) {
+    if(!WEB_APP_URL) return;
+    const status = document.getElementById('sheetStatus');
+    status.innerText = "Mengirim skor ke cloud...";
+    try {
+        await fetch(WEB_APP_URL, {
+            method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nama: name, skor: score, mode: currentTimeMode, level: currentDifficulty, tanggal: new Date().toLocaleString() })
+        });
+        status.innerText = "✅ Skor tersimpan!";
+    } catch(e) { status.innerText = "❌ Gagal menyimpan skor."; }
+}
+
 function endGame() {
     const list = document.getElementById('winnerList');
-    list.innerHTML = gameInstances.sort((a,b)=>b.score-a.score).map((p,i)=>`
-        <div class="player-row ${i===0?'winner':''}" style="background: #f1f2f6; padding: 12px 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: 900;">
-            <span>${i===0?'🥇':''} PEMAIN ${p.id}</span>
-            <span style="font-family: 'Fredoka One'; color: #2d3436; font-size: 1.4rem;">${p.score}</span>
+    const sorted = [...gameInstances].sort((a,b)=>b.score - a.score);
+    list.innerHTML = sorted.map((p,i)=>`
+        <div style="background:#f1f2f6; padding:12px; border-radius:12px; margin-bottom:8px; display:flex; justify-content:space-between; font-weight:900;">
+            <span>${i===0?'🏆':''} ${gameInstances.length > 1 ? 'Pemain '+p.id : currentUsername}</span>
+            <span>${p.score}</span>
         </div>
     `).join('');
     document.getElementById('gameOver').classList.remove('hidden');
     AudioEngine.playWin();
+    sendToGoogleSheets(currentUsername, sorted[0].score);
 }
 
 function showMenu() {
@@ -618,14 +554,46 @@ function showMenu() {
     document.getElementById('gameOver').classList.add('hidden');
 }
 
-canvas.addEventListener('mousedown', e => {
-    if(!isPlaying) return;
-    gameInstances.forEach(g => g.handleInput(e.clientX, e.clientY));
-});
+function resize() {
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    if(koiFish.length === 0) koiFish = Array.from({length: 10}, () => new KoiFish(canvas.width, canvas.height));
+    if(isPlaying) {
+        gameInstances.forEach((g, i) => {
+            const w = canvas.width / gameInstances.length;
+            g.setBounds(i * w, 0, w, canvas.height);
+            g.reset();
+        });
+    }
+}
+
+window.addEventListener('resize', resize);
 canvas.addEventListener('touchstart', e => {
     if(!isPlaying) return;
-    Array.from(e.changedTouches).forEach(t => gameInstances.forEach(g => g.handleInput(t.clientX, t.clientY)));
-}, {passive: false});
+    Array.from(e.changedTouches).forEach(t => {
+        gameInstances.forEach(g => {
+            const r = Math.min(30, g.bw * 0.35);
+            let hit = g.leaves.find(l => Math.hypot(t.clientX - l.x, t.clientY - l.y) < r + 20);
+            if(hit && !g.frog.jumping && !g.isDead) {
+                g.frog.jumping = true; g.frog.p = 0; g.frog.sx = g.frog.x; g.frog.sy = g.frog.y;
+                g.frog.tx = hit.x; g.frog.ty = hit.y; g.frog.targetVal = hit.val;
+                ripples.push(new Ripple(g.frog.x, g.frog.y)); AudioEngine.playJump();
+            }
+        });
+    });
+});
+
+canvas.addEventListener('mousedown', e => {
+    if(!isPlaying) return;
+    gameInstances.forEach(g => {
+        const r = Math.min(30, g.bw * 0.35);
+        let hit = g.leaves.find(l => Math.hypot(e.clientX - l.x, e.clientY - l.y) < r + 20);
+        if(hit && !g.frog.jumping && !g.isDead) {
+            g.frog.jumping = true; g.frog.p = 0; g.frog.sx = g.frog.x; g.frog.sy = g.frog.y;
+            g.frog.tx = hit.x; g.frog.ty = hit.y; g.frog.targetVal = hit.val;
+            ripples.push(new Ripple(g.frog.x, g.frog.y)); AudioEngine.playJump();
+        }
+    });
+});
 
 document.getElementById('btnHome').onclick = showMenu;
 document.getElementById('btnAudio').onclick = (e) => { e.target.innerText = AudioEngine.toggle() ? "🔊" : "🔇"; };
